@@ -1,0 +1,11 @@
+.start-screen-container {
+  width: 80%;
+  height: 50%;
+  background: rgb(229, 224, 224);
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
