@@ -9,13 +9,14 @@ const dinoInitialYPosition = gameHeight - 50;
 const dinoInitialXPosition = 20;
 const dinoWidth = 30;
 const dinoHeight = 50;
-const maxJumpHeight = gameHeight - 50 - 50 - 100;
+const maxJumpHeight = gameHeight - 50 - 50 - 10;
 const cactusInitialPosition = gameWidth;
 
 let currentDinoY = 0;
 let isGameOver = false;
 let isJumping = false;
 let fired = false;
+let isFalling = false;
 
 function Dino({
   xPosition,
@@ -48,6 +49,7 @@ function App() {
         }
       }
     });
+
     window.addEventListener('keyup', (e) => {
       if (e.code === 'Space') {
         fired = false;
@@ -65,43 +67,56 @@ function App() {
         const isDinoOnTheGround = current === dinoInitialYPosition;
         const isMaxReached = current <= maxJumpHeight;
 
+        // PREVENTS DINO FROM JUMPING HIGHER THEN THE LIMIT
         if (isMaxReached) {
+          console.log('HIT MAX');
+
           isJumping = false;
         }
 
         if (isDinoOnTheGround) {
           fired = false;
+          isFalling = false;
         }
 
-        if (isJumping) {
-          currentDinoY = current - 5;
-          return current - 5;
+        // JUMP - INCRESE 1PX TO THE JUMP
+        if (isJumping && !isFalling) {
+          isFalling = false;
+          currentDinoY = current - 1;
+          return current - 1;
         }
 
+        // STOP THE FALL WHEN THE DINO HITS THE GROUND
         if (isDinoOnTheGround) {
           currentDinoY = dinoInitialYPosition;
+          isFalling = false;
           return dinoInitialYPosition;
         }
-        currentDinoY = current + 5;
-        return current + 5;
+
+        // FALL - INCRESE 1PX TO THE FALL
+        isFalling = true;
+        currentDinoY = current + 1;
+        return current + 1;
       });
 
-      setCactusPosition((current) => {
-        const isTouchingDino_right =
-          current <= dinoInitialXPosition + dinoWidth;
+      // setCactusPosition((current) => {
+      //   const isTouchingDino_right =
+      //     current <= dinoInitialXPosition + dinoWidth;
 
-        const isTouchingDino_bottom = currentDinoY >= gameHeight - dinoHeight;
+      //   const isTouchingDino_bottom = currentDinoY >= gameHeight - dinoHeight;
 
-        if (isTouchingDino_right && isTouchingDino_bottom) {
-          isGameOver = true;
-          return current;
-        }
+      //   // console.log(currentDinoY);
 
-        if (current <= 0) {
-          return gameWidth;
-        }
-        return current - 5;
-      });
+      //   // if (isTouchingDino_right && isTouchingDino_bottom) {
+      //   //   isGameOver = true;
+      //   //   return current;
+      //   // }
+
+      //   if (current <= 0) {
+      //     return gameWidth;
+      //   }
+      //   return current - 1;
+      // });
 
       window.requestAnimationFrame(gameLoop);
     }
@@ -109,7 +124,7 @@ function App() {
 
   return (
     <div className="game">
-      {console.log({ isGameOver_global })}
+      {/* {console.log({ isGameOver_global })} */}
       <Stage width={gameWidth} height={gameHeight}>
         <Layer>
           <Dino
@@ -118,7 +133,7 @@ function App() {
             height={dinoHeight}
           />
           <Rect
-            x={cactusPosition}
+            x={50}
             y={gameHeight - 50}
             width={dinoWidth}
             height={50}
