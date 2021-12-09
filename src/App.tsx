@@ -3,34 +3,43 @@ import { useEffect, useState, useRef } from 'react';
 import { Stage, Layer, Rect, Text } from 'react-konva';
 import Konva from 'konva';
 
-function Dino({
-  xPosition,
-  yPosition,
-}: {
-  xPosition: number;
-  yPosition: number;
-}) {
-  return (
-    <Rect x={xPosition} y={yPosition} width={30} height={50} fill="blue" />
-  );
-}
 const gameWidth = window.innerWidth * 0.7;
 const gameHeight = window.innerHeight * 0.5;
 const dinoInitialYPosition = gameHeight - 50;
 const dinoInitialXPosition = 20;
-const maxJumpHeight = gameHeight - 50 - 50 - 20;
-const cactusInitialPosition = 20 + 30 + 2;
+const dinoWidth = 30;
+const dinoHeight = 50;
+const maxJumpHeight = gameHeight - 50 - 50 - 100;
+const cactusInitialPosition = gameWidth;
+
+let currentDinoY = 0;
+let isGameOver = false;
+let isJumping = false;
+let fired = false;
+
+function Dino({
+  xPosition,
+  yPosition,
+  height,
+}: {
+  xPosition: number;
+  yPosition: number;
+  height: number;
+}) {
+  return (
+    <Rect x={xPosition} y={yPosition} width={30} height={height} fill="blue" />
+  );
+}
 
 function App() {
   const [cactusPosition, setCactusPosition] = useState(cactusInitialPosition);
 
   const [dinoPosition, setDinoPosition] = useState(dinoInitialYPosition);
-
+  const [isGameOver_global, setIsGameOver_global] = useState(false);
   useEffect(() => {
     window.requestAnimationFrame(gameLoop);
     // 60 fps
-    let isJumping = false;
-    let fired = false;
+
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space') {
         if (!fired) {
@@ -46,6 +55,11 @@ function App() {
     });
 
     function gameLoop() {
+      if (isGameOver) {
+        setIsGameOver_global(true);
+        return;
+      }
+
       // DINO moving part
       setDinoPosition((current) => {
         const isDinoOnTheGround = current === dinoInitialYPosition;
@@ -60,14 +74,33 @@ function App() {
         }
 
         if (isJumping) {
+          currentDinoY = current - 5;
           return current - 5;
         }
 
         if (isDinoOnTheGround) {
+          currentDinoY = dinoInitialYPosition;
           return dinoInitialYPosition;
         }
-
+        currentDinoY = current + 5;
         return current + 5;
+      });
+
+      setCactusPosition((current) => {
+        const isTouchingDino_right =
+          current <= dinoInitialXPosition + dinoWidth;
+
+        const isTouchingDino_bottom = currentDinoY >= gameHeight - dinoHeight;
+
+        if (isTouchingDino_right && isTouchingDino_bottom) {
+          isGameOver = true;
+          return current;
+        }
+
+        if (current <= 0) {
+          return gameWidth;
+        }
+        return current - 5;
       });
 
       window.requestAnimationFrame(gameLoop);
@@ -76,13 +109,18 @@ function App() {
 
   return (
     <div className="game">
+      {console.log({ isGameOver_global })}
       <Stage width={gameWidth} height={gameHeight}>
         <Layer>
-          <Dino xPosition={dinoInitialXPosition} yPosition={dinoPosition} />
+          <Dino
+            xPosition={dinoInitialXPosition}
+            yPosition={dinoPosition}
+            height={dinoHeight}
+          />
           <Rect
             x={cactusPosition}
             y={gameHeight - 50}
-            width={30}
+            width={dinoWidth}
             height={50}
             fill="green"
           />
