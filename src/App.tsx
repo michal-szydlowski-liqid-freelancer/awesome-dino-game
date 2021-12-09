@@ -9,8 +9,11 @@ const dinoInitialYPosition = gameHeight - 50;
 const dinoInitialXPosition = 20;
 const dinoWidth = 30;
 const dinoHeight = 50;
-const maxJumpHeight = gameHeight - 50 - 50 - 10;
+const maxJumpHeight = gameHeight - 50 - 50 - 40;
 const cactusInitialPosition = gameWidth;
+let gameSpeed = 7;
+let jumpSpeed = 6;
+let score = 0;
 
 let currentDinoY = 0;
 let isGameOver = false;
@@ -57,11 +60,12 @@ function App() {
     });
 
     function gameLoop() {
-      console.log({ isGameOver });
-      if (isGameOver) {
-        setIsGameOver_global(true);
-        return;
-      }
+      score++;
+      // console.log({ isGameOver });
+      // if (isGameOver) {
+      //   setIsGameOver_global(true);
+      //   return;
+      // }
 
       // DINO moving part
       setDinoPosition((current) => {
@@ -83,8 +87,8 @@ function App() {
         // JUMP - INCRESE 1PX TO THE JUMP
         if (isJumping && !isFalling) {
           isFalling = false;
-          currentDinoY = current - 1;
-          return current - 1;
+          currentDinoY = current - jumpSpeed;
+          return current - jumpSpeed;
         }
 
         // STOP THE FALL WHEN THE DINO HITS THE GROUND
@@ -96,45 +100,55 @@ function App() {
 
         // FALL - INCRESE 1PX TO THE FALL
         isFalling = true;
-        currentDinoY = current + 1;
-        return current + 1;
+        currentDinoY = current + jumpSpeed;
+        return current + jumpSpeed;
       });
 
-      // setCactusPosition((current) => {
-      //   const isTouchingDino_right =
-      //     current <= dinoInitialXPosition + dinoWidth;
+      setCactusPosition((current) => {
+        const isTouchingDino_right =
+          current <= dinoInitialXPosition + dinoWidth;
 
-      const isTouchingDino_bottom =
-        currentDinoY + dinoHeight >= gameHeight - dinoHeight;
+        const isTouchingDino_bottom =
+          currentDinoY + dinoHeight >= gameHeight - dinoHeight;
 
-      //   // console.log(currentDinoY);
+        //   // console.log(currentDinoY);
 
-      //   // if (isTouchingDino_right && isTouchingDino_bottom) {
-      //   //   isGameOver = true;
-      //   //   return current;
-      //   // }
+        if (isTouchingDino_right && isTouchingDino_bottom) {
+          console.log('colision');
+          score = 0;
+          isGameOver = true;
+          return current;
+        }
 
-      //   if (current <= 0) {
-      //     return gameWidth;
-      //   }
-      //   return current - 1;
-      // });
+        if (current <= 0) {
+          return gameWidth;
+        }
+        return current - gameSpeed;
+      });
 
       window.requestAnimationFrame(gameLoop);
     }
   }, [isGameOver]);
 
-  const resetGame = () => {
-    setIsGameOver_global(false);
-    isGameOver = false;
-    fired = false;
-  };
+  // const resetGame = () => {
+  //   setIsGameOver_global(false);
+  //   isGameOver = false;
+  //   fired = false;
+  // };
+
   return (
     <>
       <div className="game">
-        {console.log({ isGameOver_global })}
+        {/* {console.log({ isGameOver_global })} */}
         <Stage width={gameWidth} height={gameHeight}>
           <Layer>
+            <Text
+              text={`SCORE: ${score}`}
+              fontFamily={'Press Start 2P'}
+              fontWeight="bolder"
+              align="center"
+              padding={20}
+            />
             <Dino
               xPosition={dinoInitialXPosition}
               yPosition={dinoPosition}
@@ -150,7 +164,7 @@ function App() {
           </Layer>
         </Stage>
       </div>
-      <button onClick={resetGame}>reset</button>
+      {/* <button onClick={resetGame}>reset</button> */}
     </>
   );
 }
