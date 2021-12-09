@@ -57,6 +57,7 @@ function App() {
     });
 
     function gameLoop() {
+      console.log({ isGameOver });
       if (isGameOver) {
         setIsGameOver_global(true);
         return;
@@ -103,7 +104,8 @@ function App() {
       //   const isTouchingDino_right =
       //     current <= dinoInitialXPosition + dinoWidth;
 
-      //   const isTouchingDino_bottom = currentDinoY >= gameHeight - dinoHeight;
+      const isTouchingDino_bottom =
+        currentDinoY + dinoHeight >= gameHeight - dinoHeight;
 
       //   // console.log(currentDinoY);
 
@@ -120,28 +122,36 @@ function App() {
 
       window.requestAnimationFrame(gameLoop);
     }
-  }, []);
+  }, [isGameOver]);
 
+  const resetGame = () => {
+    setIsGameOver_global(false);
+    isGameOver = false;
+    fired = false;
+  };
   return (
-    <div className="game">
-      {/* {console.log({ isGameOver_global })} */}
-      <Stage width={gameWidth} height={gameHeight}>
-        <Layer>
-          <Dino
-            xPosition={dinoInitialXPosition}
-            yPosition={dinoPosition}
-            height={dinoHeight}
-          />
-          <Rect
-            x={50}
-            y={gameHeight - 50}
-            width={dinoWidth}
-            height={50}
-            fill="green"
-          />
-        </Layer>
-      </Stage>
-    </div>
+    <>
+      <div className="game">
+        {console.log({ isGameOver_global })}
+        <Stage width={gameWidth} height={gameHeight}>
+          <Layer>
+            <Dino
+              xPosition={dinoInitialXPosition}
+              yPosition={dinoPosition}
+              height={dinoHeight}
+            />
+            <Rect
+              x={cactusPosition}
+              y={gameHeight - 50}
+              width={dinoWidth}
+              height={50}
+              fill="green"
+            />
+          </Layer>
+        </Stage>
+      </div>
+      <button onClick={resetGame}>reset</button>
+    </>
   );
 }
 
