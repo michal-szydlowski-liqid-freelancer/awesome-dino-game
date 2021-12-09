@@ -14,93 +14,71 @@ function Dino({
     <Rect x={xPosition} y={yPosition} width={30} height={50} fill="blue" />
   );
 }
+const gameWidth = window.innerWidth * 0.7;
+const gameHeight = window.innerHeight * 0.5;
+const dinoInitialYPosition = gameHeight - 50;
+const dinoInitialXPosition = 20;
+const maxJumpHeight = gameHeight - 50 - 50 - 20;
+const cactusInitialPosition = 20 + 30 + 2;
 
 function App() {
-  const gameWidth = window.innerWidth * 0.7;
-  const gameHeight = window.innerHeight * 0.5;
-  const dinoInitialYPosition = gameHeight - 50;
-  const dinoInitialXPosition = 20;
-  const cactusInitialPosition = gameWidth - 30;
-
-  const timer = useRef(0);
   const [cactusPosition, setCactusPosition] = useState(cactusInitialPosition);
 
-  const [dinoPosition, setDinoPosition] = useState({
-    x: dinoInitialXPosition,
-    y: dinoInitialYPosition,
-  });
-  const [isJumping, setIsJumping] = useState(false);
-
-  const jump = () => {
-    if (dinoPosition.y !== dinoInitialYPosition) {
-      return;
-    }
-
-    setDinoPosition(({ x, y }) => {
-      // if (y < gameHeight - 50 - 50 - 5) {
-      //   return { x, y };
-      // }
-      console.log({ x, y });
-      return { x, y: y - 10 };
-    });
-  };
-  const interval = 50;
-
-  const fallingTimer = useRef(0);
-
-  const fallDown = () => {
-    fallingTimer.current = setInterval(() => {
-      setDinoPosition(({ x, y }) => {
-        if (y + 50 >= gameHeight) {
-          clearInterval(timer.current);
-          clearInterval(fallingTimer.current);
-          return { x, y: dinoInitialYPosition };
-        }
-
-        return { x, y: y + 10 };
-      });
-    }, interval);
-  };
+  const [dinoPosition, setDinoPosition] = useState(dinoInitialYPosition);
 
   useEffect(() => {
-    window.addEventListener('keyup', (e) => {
-      if (e.code === 'Space') {
-        fallDown();
-      }
-    });
+    window.requestAnimationFrame(gameLoop);
+    // 60 fps
+    let isJumping = false;
+    let fired = false;
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space') {
-        jump();
+        if (!fired) {
+          fired = true;
+          isJumping = true;
+        }
       }
     });
-  }, []);
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'Space') {
+        fired = false;
+      }
+    });
 
-  // game loop
+    function gameLoop() {
+      // DINO moving part
+      setDinoPosition((current) => {
+        const isDinoOnTheGround = current === dinoInitialYPosition;
+        const isMaxReached = current <= maxJumpHeight;
 
-  useEffect(() => {
-    timer.current = setInterval(() => {
-      setCactusPosition((curr) => {
-        if (curr <= 20 + 30) {
-          clearInterval(timer.current);
-          return curr;
+        if (isMaxReached) {
+          isJumping = false;
         }
 
-        return curr - 5;
-      });
-    }, interval);
+        if (isDinoOnTheGround) {
+          fired = false;
+        }
 
-    if (cactusPosition <= 0) {
-      setCactusPosition(cactusInitialPosition);
+        if (isJumping) {
+          return current - 5;
+        }
+
+        if (isDinoOnTheGround) {
+          return dinoInitialYPosition;
+        }
+
+        return current + 5;
+      });
+
+      window.requestAnimationFrame(gameLoop);
     }
-    fallDown();
-    return () => clearInterval(timer.current);
   }, []);
 
   return (
     <div className="game">
       <Stage width={gameWidth} height={gameHeight}>
         <Layer>
-          <Dino xPosition={dinoPosition.x} yPosition={dinoPosition.y} />
+          <Dino xPosition={dinoInitialXPosition} yPosition={dinoPosition} />
           <Rect
             x={cactusPosition}
             y={gameHeight - 50}
