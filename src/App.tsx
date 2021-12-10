@@ -1,9 +1,10 @@
+import StartScreen from './components/start-screen/StartScreen';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <h1>Hello potato</h1>
+      <StartScreen />
     </div>
   );
 }
