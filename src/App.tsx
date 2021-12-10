@@ -1,22 +1,22 @@
 import StartScreen from './components/start-screen/StartScreen';
 import './App.css';
 import { useEffect, useState } from 'react';
-import { Stage, Layer, Text, Image } from 'react-konva';
+import { Stage, Layer, Text, Image, Rect } from 'react-konva';
 import useImage from 'use-image';
 
 function getRandomInRange(min: number, max: number) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-const gameWidth = window.innerWidth * 0.7;
-const gameHeight = window.innerHeight * 0.5;
+const gameWidth = window.innerWidth * 0.9 > 450 ? 450 : window.innerWidth * 0.9;
+const gameHeight = 200;
 const dinoInitialYPosition = gameHeight - 50;
 const dinoInitialXPosition = 20;
 const dinoWidth = 30;
 const dinoHeight = 50;
 const maxJumpHeight = gameHeight - 50 - 50 - 50;
 const cactusInitialPosition = gameWidth;
-const gameSpeed = 5;
+const gameSpeed = 6;
 const jumpSpeed = 4;
 
 let score = 0;
@@ -41,7 +41,7 @@ function Dino({
   yPosition: number;
   height: number;
 }) {
-  const [image] = useImage('src/assets/louis.png');
+  const [image] = useImage('src/assets/puma.png');
   return (
     <Image
       image={image}
@@ -84,12 +84,9 @@ const spawnObstacle = () => {
 };
 
 function App() {
-  const [obstaclePositionArr, setObstaclePositionArr] = useState<Obstacle[]>(
-    []
-  );
+  const [obstacleArray, setObstacleArr] = useState<Obstacle[]>([]);
   const [dinoPosition, setDinoPosition] = useState(dinoInitialYPosition);
   const [gameOverGlobal, setGameOverGlobal] = useState(false);
-  const [finalScore, setFinalScore] = useState(0);
 
   useEffect(() => {
     window.requestAnimationFrame(gameLoop);
@@ -111,10 +108,7 @@ function App() {
     });
 
     function gameLoop() {
-      // console.log({ isGameOver });
       if (isGameOver) {
-        console.log('endGame');
-
         setGameOverGlobal(true);
         return;
       }
@@ -161,18 +155,15 @@ function App() {
       spawnTimer--;
 
       if (spawnTimer <= 0 && !isGameOver) {
-        setObstaclePositionArr((curr) => [...curr, spawnObstacle()]);
+        setObstacleArr((curr) => [...curr, spawnObstacle()]);
 
-        console.log(obstaclePositionArr);
+        console.log(obstacleArray);
 
         // spawnTimer = initialSpawnTimer - gameSpeed;
         spawnTimer = initialSpawnTimer;
       }
 
-      // 1. after the element leaves the screen we should remove it from the array
-      // 2. there is a bug with the collision
-
-      setObstaclePositionArr((curr) => {
+      setObstacleArr((curr) => {
         const currentObstaclesArray = [...curr];
 
         currentObstaclesArray.forEach((obstacle) => {
@@ -180,7 +171,7 @@ function App() {
         });
 
         currentObstaclesArray.forEach((obstacle, index) => {
-          const hasLeftTheScreen = obstacle.x <= 0;
+          const hasLeftTheScreen = obstacle.x + obstacle.width <= 0;
 
           if (hasLeftTheScreen) {
             currentObstaclesArray.splice(index, 1);
@@ -192,12 +183,8 @@ function App() {
           const dinoYPos = currentDinoY + dinoHeight;
           const isTouchingDino_bottom =
             dinoYPos >= gameHeight - obstacle.height;
-          // console.log({ hasLeftTheScreen });
 
           if (isTouchingDino_bottom && isTouchingDino_right) {
-            console.log('collision');
-            setFinalScore(score);
-            // score = 0;
             isGameOver = true;
             return obstacle;
           }
@@ -206,59 +193,76 @@ function App() {
         });
 
         return currentObstaclesArray;
-
-        // return curr.map((obs, index) => {
-
-        //   const isTouchingDino_right =
-        //     obs.x <= dinoInitialXPosition + dinoWidth;
-
-        //   const hasLeftTheScreen = obs.x <= 0;
-
-        //   const dinoYPos = currentDinoY + dinoHeight;
-        //   const isTouchingDino_bottom = dinoYPos >= gameHeight - obs.height;
-        //   console.log({ hasLeftTheScreen });
-
-        //   // if (isTouchingDino_bottom && isTouchingDino_right) {
-        //   //   console.log('colision');
-        //   //   score = 0;
-        //   //   isGameOver = true;
-        //   //   return obs;
-        //   // }
-
-        //   return { ...obs, x: obs.x - gameSpeed };
-        // });
       });
 
       window.requestAnimationFrame(gameLoop);
     }
   }, [gameOverGlobal]);
 
-  // const resetGame = () => {
-  //   setIsGameOver_global(false);
-  //   isGameOver = false;
-  //   fired = false;
-  // };
+  const resetGame = () => {
+    setGameOverGlobal(false);
+    setObstacleArr([]);
+    score = 0;
+    isGameOver = false;
+    fired = false;
+  };
 
   return (
     <>
       <div className="game">
-        {console.log({ finalScore, isGameOver, gameOverGlobal })}
         <Stage width={gameWidth} height={gameHeight}>
           <Layer>
             <Text
+              y={15}
+              x={15}
               text={`SCORE: ${score}`}
               fontFamily={'Press Start 2P'}
               fontWeight="bolder"
               align="center"
-              padding={20}
             />
+            {isGameOver && (
+              <>
+                <Text
+                  y={75}
+                  width={gameWidth}
+                  text={`Game Over, you suck! :(`}
+                  fontFamily={'Press Start 2P'}
+                  fontWeight="bolder"
+                  align="center"
+                />
+                <Rect
+                  x={gameWidth / 2 - 35}
+                  y={100}
+                  width={70}
+                  height={20}
+                  stroke="#000"
+                  strokeWidth={2}
+                  shadowColor="black"
+                  shadowBlur={3}
+                  shadowOffsetX={2}
+                  shadowOffsetY={2}
+                  shadowOpacity={0.3}
+                  fill={'transparent'}
+                  onClick={resetGame}
+                />
+                <Text
+                  x={gameWidth / 2 - 35}
+                  y={100}
+                  text={`RESET`}
+                  fontFamily={'Press Start 2P'}
+                  fontWeight="bolder"
+                  align="center"
+                  padding={5}
+                  onClick={resetGame}
+                />
+              </>
+            )}
             <Dino
               xPosition={dinoInitialXPosition}
               yPosition={dinoPosition}
               height={dinoHeight}
             />
-            {console.log(obstaclePositionArr)}
-            {obstaclePositionArr.map((obs) => {
+            {obstacleArray.map((obs) => {
               return (
                 <Potato
                   xPosition={obs.x}
@@ -271,7 +275,6 @@ function App() {
           </Layer>
         </Stage>
       </div>
-      {/* <button onClick={resetGame}>reset</button> */}
     </>
   );
 }
