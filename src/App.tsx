@@ -36,12 +36,14 @@ function Dino({
   xPosition,
   yPosition,
   height,
+  char,
 }: {
   xPosition: number;
   yPosition: number;
   height: number;
+  char: string;
 }) {
-  const [image] = useImage('src/assets/puma.png');
+  const [image] = useImage(`src/assets/${char}.png`);
   return (
     <Image
       image={image}
@@ -87,6 +89,8 @@ function App() {
   const [obstacleArray, setObstacleArr] = useState<Obstacle[]>([]);
   const [dinoPosition, setDinoPosition] = useState(dinoInitialYPosition);
   const [gameOverGlobal, setGameOverGlobal] = useState(false);
+  const [char, setChar] = useState('louis');
+  const [isStarScreen, setisStarScreen] = useState(true);
 
   useEffect(() => {
     window.requestAnimationFrame(gameLoop);
@@ -209,72 +213,87 @@ function App() {
 
   return (
     <>
-      <div className="game">
-        <Stage width={gameWidth} height={gameHeight}>
-          <Layer>
-            <Text
-              y={15}
-              x={15}
-              text={`SCORE: ${score}`}
-              fontFamily={'Press Start 2P'}
-              fontWeight="bolder"
-              align="center"
-            />
-            {isGameOver && (
-              <>
+      {isStarScreen ? (
+        <div className="App">
+          <StartScreen
+            startGame={(char) => {
+              setChar(char);
+              setisStarScreen(false);
+              console.log(char);
+            }}
+          />
+        </div>
+      ) : (
+        <>
+          <div className="game">
+            <Stage width={gameWidth} height={gameHeight}>
+              <Layer>
                 <Text
-                  y={75}
-                  width={gameWidth}
-                  text={`Game Over, you suck! :(`}
+                  y={15}
+                  x={15}
+                  text={`SCORE: ${score}`}
                   fontFamily={'Press Start 2P'}
                   fontWeight="bolder"
                   align="center"
                 />
-                <Rect
-                  x={gameWidth / 2 - 35}
-                  y={100}
-                  width={70}
-                  height={20}
-                  stroke="#000"
-                  strokeWidth={2}
-                  shadowColor="black"
-                  shadowBlur={3}
-                  shadowOffsetX={2}
-                  shadowOffsetY={2}
-                  shadowOpacity={0.3}
-                  fill={'transparent'}
-                  onClick={resetGame}
+                {isGameOver && (
+                  <>
+                    <Text
+                      y={75}
+                      width={gameWidth}
+                      text={`Game Over, you suck! :(`}
+                      fontFamily={'Press Start 2P'}
+                      fontWeight="bolder"
+                      align="center"
+                    />
+                    <Rect
+                      x={gameWidth / 2 - 35}
+                      y={100}
+                      width={70}
+                      height={20}
+                      stroke="#000"
+                      strokeWidth={2}
+                      shadowColor="black"
+                      shadowBlur={3}
+                      shadowOffsetX={2}
+                      shadowOffsetY={2}
+                      shadowOpacity={0.3}
+                      fill={'transparent'}
+                      onClick={resetGame}
+                    />
+                    <Text
+                      x={gameWidth / 2 - 35}
+                      y={100}
+                      text={`RESET`}
+                      fontFamily={'Press Start 2P'}
+                      fontWeight="bolder"
+                      align="center"
+                      padding={5}
+                      onClick={resetGame}
+                    />
+                  </>
+                )}
+                <Dino
+                  xPosition={dinoInitialXPosition}
+                  yPosition={dinoPosition}
+                  height={dinoHeight}
+                  char={char}
                 />
-                <Text
-                  x={gameWidth / 2 - 35}
-                  y={100}
-                  text={`RESET`}
-                  fontFamily={'Press Start 2P'}
-                  fontWeight="bolder"
-                  align="center"
-                  padding={5}
-                  onClick={resetGame}
-                />
-              </>
-            )}
-            <Dino
-              xPosition={dinoInitialXPosition}
-              yPosition={dinoPosition}
-              height={dinoHeight}
-            />
-            {obstacleArray.map((obs) => {
-              return (
-                <Potato
-                  xPosition={obs.x}
-                  yPosition={gameHeight - obs.height}
-                  width={obs.width}
-                  height={obs.height}
-                />
-              );
-            })}
-          </Layer>
-        </Stage>
-      </div>
+                {obstacleArray.map((obs) => {
+                  return (
+                    <Potato
+                      xPosition={obs.x}
+                      yPosition={gameHeight - obs.height}
+                      width={obs.width}
+                      height={obs.height}
+                    />
+                  );
+                })}
+              </Layer>
+            </Stage>
+          </div>
+        </>
+      )}
     </>
   );
 }
