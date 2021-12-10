@@ -16,9 +16,12 @@ const dinoWidth = 30;
 const dinoHeight = 50;
 const maxJumpHeight = gameHeight - 50 - 50 - 50;
 const cactusInitialPosition = gameWidth;
-const gameSpeed = 6;
 const jumpSpeed = 4;
+const spawnOffset = 0.002;
 
+let obstacleSpawnSpeed = 6;
+
+let gameSpeed = 6;
 let score = 0;
 let currentDinoY = 0;
 let isGameOver = false;
@@ -26,7 +29,7 @@ let isJumping = false;
 let fired = false;
 let isFalling = false;
 
-let initialSpawnTimer = 200;
+const initialSpawnTimer = 200;
 
 let spawnTimer = initialSpawnTimer;
 
@@ -90,12 +93,9 @@ function App() {
   const [dinoPosition, setDinoPosition] = useState(dinoInitialYPosition);
   const [gameOverGlobal, setGameOverGlobal] = useState(false);
   const [char, setChar] = useState('louis');
-  const [isStarScreen, setisStarScreen] = useState(true);
+  const [isStarScreen, setisStarScreen] = useState(false);
 
   useEffect(() => {
-    window.requestAnimationFrame(gameLoop);
-    // 60 fps
-
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space') {
         if (!fired) {
@@ -110,8 +110,14 @@ function App() {
         fired = false;
       }
     });
+  }, []);
 
-    function gameLoop() {
+  useEffect(() => {
+    window.requestAnimationFrame(gameLoop);
+    // 60 fps
+
+    function gameLoop(time) {
+      console.log(time);
       if (isGameOver) {
         setGameOverGlobal(true);
         return;
@@ -161,18 +167,16 @@ function App() {
       if (spawnTimer <= 0 && !isGameOver) {
         setObstacleArr((curr) => [...curr, spawnObstacle()]);
 
-        console.log(obstacleArray);
-
-        // spawnTimer = initialSpawnTimer - gameSpeed;
-        spawnTimer = initialSpawnTimer;
+        obstacleSpawnSpeed = obstacleSpawnSpeed + spawnOffset;
+        spawnTimer = initialSpawnTimer - obstacleSpawnSpeed;
       }
 
       setObstacleArr((curr) => {
         const currentObstaclesArray = [...curr];
 
-        currentObstaclesArray.forEach((obstacle) => {
-          obstacle.x = obstacle.x - 2;
-        });
+        // currentObstaclesArray.forEach((obstacle) => {
+        //   obstacle.x = obstacle.x - 2;
+        // });
 
         currentObstaclesArray.forEach((obstacle, index) => {
           const hasLeftTheScreen = obstacle.x + obstacle.width <= 0;
@@ -192,13 +196,13 @@ function App() {
             isGameOver = true;
             return obstacle;
           }
-
-          return { ...obstacle, x: obstacle.x - gameSpeed };
+          return (obstacle.x = obstacle.x - gameSpeed);
         });
 
         return currentObstaclesArray;
       });
 
+      gameSpeed = gameSpeed + spawnOffset;
       window.requestAnimationFrame(gameLoop);
     }
   }, [gameOverGlobal]);
