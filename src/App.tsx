@@ -1,7 +1,9 @@
+import StartScreen from './components/start-screen/StartScreen';
 import './App.css';
 import { useEffect, useState, useRef } from 'react';
-import { Stage, Layer, Rect, Text } from 'react-konva';
+import { Stage, Layer, Rect, Text, Image } from 'react-konva';
 import Konva from 'konva';
+import useImage from 'use-image';
 
 function getRandomInRange(min: number, max: number) {
   return Math.floor(Math.random() * (max - min) + min);
@@ -40,8 +42,38 @@ function Dino({
   yPosition: number;
   height: number;
 }) {
+  const [image] = useImage('src/assets/louis.png');
   return (
-    <Rect x={xPosition} y={yPosition} width={30} height={height} fill="blue" />
+    <Image
+      image={image}
+      x={xPosition}
+      y={yPosition}
+      width={30}
+      height={height}
+    />
+  );
+}
+
+function Potato({
+  xPosition,
+  yPosition,
+  height,
+  width,
+}: {
+  xPosition: number;
+  yPosition: number;
+  height: number;
+  width: number;
+}) {
+  const [image] = useImage('src/assets/angry_potato_adobespark.png');
+  return (
+    <Image
+      image={image}
+      x={xPosition}
+      y={yPosition}
+      width={width + 10}
+      height={height}
+    />
   );
 }
 const spawnObstacle = () => {
@@ -187,12 +219,11 @@ function App() {
 
             {obstaclePositionArr.map((obs) => {
               return (
-                <Rect
-                  x={obs.x}
-                  y={gameHeight - obs.height}
+                <Potato
+                  xPosition={obs.x}
+                  yPosition={gameHeight - obs.height}
                   width={obs.width}
                   height={obs.height}
-                  fill="green"
                 />
               );
             })}
