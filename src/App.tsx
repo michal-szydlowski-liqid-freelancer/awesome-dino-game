@@ -3,16 +3,20 @@ import { useEffect, useState, useRef } from 'react';
 import { Stage, Layer, Rect, Text } from 'react-konva';
 import Konva from 'konva';
 
+function getRandomInRange(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
 const gameWidth = window.innerWidth * 0.7;
 const gameHeight = window.innerHeight * 0.5;
 const dinoInitialYPosition = gameHeight - 50;
 const dinoInitialXPosition = 20;
 const dinoWidth = 30;
 const dinoHeight = 50;
-const maxJumpHeight = gameHeight - 50 - 50 - 40;
+const maxJumpHeight = gameHeight - 50 - 50 - 50;
 const cactusInitialPosition = gameWidth;
-let gameSpeed = 7;
-let jumpSpeed = 6;
+const gameSpeed = 5;
+const jumpSpeed = 1;
 let score = 0;
 
 let currentDinoY = 0;
@@ -20,6 +24,12 @@ let isGameOver = false;
 let isJumping = false;
 let fired = false;
 let isFalling = false;
+
+const initialSpawnTimer = 200;
+
+let spawnTimer = initialSpawnTimer;
+
+type Obstacle = { height: number; width: number; x: number };
 
 function Dino({
   xPosition,
@@ -34,12 +44,20 @@ function Dino({
     <Rect x={xPosition} y={yPosition} width={30} height={height} fill="blue" />
   );
 }
+const spawnObstacle = () => {
+  const height = getRandomInRange(30, 50);
+  const width = getRandomInRange(15, 30);
+  const newObs = { height, width, x: cactusInitialPosition };
+
+  return newObs;
+};
 
 function App() {
-  const [cactusPosition, setCactusPosition] = useState(cactusInitialPosition);
+  const [obstaclePositionArr, setObstaclePositionArr] = useState<Obstacle[]>(
+    []
+  );
 
   const [dinoPosition, setDinoPosition] = useState(dinoInitialYPosition);
-  const [isGameOver_global, setIsGameOver_global] = useState(false);
   useEffect(() => {
     window.requestAnimationFrame(gameLoop);
     // 60 fps
@@ -104,26 +122,39 @@ function App() {
         return current + jumpSpeed;
       });
 
-      setCactusPosition((current) => {
-        const isTouchingDino_right =
-          current <= dinoInitialXPosition + dinoWidth;
+      spawnTimer--;
 
-        const isTouchingDino_bottom =
-          currentDinoY + dinoHeight >= gameHeight - dinoHeight;
-
-        //   // console.log(currentDinoY);
-
-        if (isTouchingDino_right && isTouchingDino_bottom) {
-          console.log('colision');
-          score = 0;
-          isGameOver = true;
-          return current;
+      if (spawnTimer <= 0 && !isGameOver) {
+        setObstaclePositionArr((curr) => [...curr, spawnObstacle()]);
+        if (obstaclePositionArr.length > 3) {
+          setObstaclePositionArr((curr) => [
+            curr[curr.length - 3],
+            curr[curr.length - 2],
+            curr[curr.length - 1],
+          ]);
         }
+        console.log(obstaclePositionArr);
 
-        if (current <= 0) {
-          return gameWidth;
-        }
-        return current - gameSpeed;
+        spawnTimer = initialSpawnTimer - gameSpeed;
+      }
+
+      setObstaclePositionArr((curr) => {
+        return curr.map((obs) => {
+          const isTouchingDino_right =
+            obs.x <= dinoInitialXPosition + dinoWidth;
+
+          const isTouchingDino_bottom =
+            currentDinoY + dinoHeight <= gameHeight - obs.height;
+
+          if (isTouchingDino_right && isTouchingDino_bottom) {
+            console.log('colision');
+            score = 0;
+            isGameOver = true;
+            return obs;
+          }
+
+          return { ...obs, x: obs.x - gameSpeed };
+        });
       });
 
       window.requestAnimationFrame(gameLoop);
@@ -139,7 +170,6 @@ function App() {
   return (
     <>
       <div className="game">
-        {/* {console.log({ isGameOver_global })} */}
         <Stage width={gameWidth} height={gameHeight}>
           <Layer>
             <Text
@@ -154,13 +184,18 @@ function App() {
               yPosition={dinoPosition}
               height={dinoHeight}
             />
-            <Rect
-              x={cactusPosition}
-              y={gameHeight - 50}
-              width={dinoWidth}
-              height={50}
-              fill="green"
-            />
+
+            {obstaclePositionArr.map((obs) => {
+              return (
+                <Rect
+                  x={obs.x}
+                  y={gameHeight - obs.height}
+                  width={obs.width}
+                  height={obs.height}
+                  fill="green"
+                />
+              );
+            })}
           </Layer>
         </Stage>
       </div>
