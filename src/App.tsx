@@ -197,7 +197,7 @@ function App() {
           if (isTouchingDino_bottom && isTouchingDino_right) {
             console.log('collision');
             setFinalScore(score);
-            score = 0;
+            // score = 0;
             isGameOver = true;
             return obstacle;
           }
