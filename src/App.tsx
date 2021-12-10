@@ -1,8 +1,7 @@
 import StartScreen from './components/start-screen/StartScreen';
 import './App.css';
-import { useEffect, useState, useRef } from 'react';
-import { Stage, Layer, Rect, Text, Image } from 'react-konva';
-import Konva from 'konva';
+import { useEffect, useState } from 'react';
+import { Stage, Layer, Text, Image } from 'react-konva';
 import useImage from 'use-image';
 
 function getRandomInRange(min: number, max: number) {
@@ -170,15 +169,18 @@ function App() {
         spawnTimer = initialSpawnTimer - gameSpeed;
       }
 
+      // 1. after the element leaves the screen we should remove it from the array
+      // 2. there is a bug with the collision
+
       setObstaclePositionArr((curr) => {
         return curr.map((obs) => {
           const isTouchingDino_right =
             obs.x <= dinoInitialXPosition + dinoWidth;
 
-          const isTouchingDino_bottom =
-            currentDinoY + dinoHeight <= gameHeight - obs.height;
+          const dinoYPos = currentDinoY + dinoHeight;
+          const isTouchingDino_bottom = dinoYPos >= gameHeight - obs.height;
 
-          if (isTouchingDino_right && isTouchingDino_bottom) {
+          if (isTouchingDino_bottom && isTouchingDino_right) {
             console.log('colision');
             score = 0;
             isGameOver = true;
