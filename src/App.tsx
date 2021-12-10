@@ -1,8 +1,7 @@
 import StartScreen from './components/start-screen/StartScreen';
 import './App.css';
-import { useEffect, useState, useRef } from 'react';
-import { Stage, Layer, Rect, Text, Image } from 'react-konva';
-import Konva from 'konva';
+import { useEffect, useState } from 'react';
+import { Stage, Layer, Text, Image } from 'react-konva';
 import useImage from 'use-image';
 
 function getRandomInRange(min: number, max: number) {
@@ -17,12 +16,12 @@ const dinoWidth = 30;
 const dinoHeight = 50;
 const maxJumpHeight = gameHeight - 50 - 50 - 50;
 const cactusInitialPosition = gameWidth;
-const gameSpeed = 5;
+const gameSpeed = 10;
 const jumpSpeed = 1;
 let score = 0;
 
 let currentDinoY = 0;
-let isGameOver = false;
+const isGameOver = false;
 let isJumping = false;
 let fired = false;
 let isFalling = false;
@@ -167,26 +166,52 @@ function App() {
         }
         console.log(obstaclePositionArr);
 
-        spawnTimer = initialSpawnTimer - gameSpeed;
+        // spawnTimer = initialSpawnTimer - gameSpeed;
+        spawnTimer = initialSpawnTimer;
       }
 
+      // 1. after the element leaves the screen we should remove it from the array
+      // 2. there is a bug with the collision
+
       setObstaclePositionArr((curr) => {
-        return curr.map((obs) => {
-          const isTouchingDino_right =
-            obs.x <= dinoInitialXPosition + dinoWidth;
+        const currentObstaclesArray = [...curr];
 
-          const isTouchingDino_bottom =
-            currentDinoY + dinoHeight <= gameHeight - obs.height;
-
-          if (isTouchingDino_right && isTouchingDino_bottom) {
-            console.log('colision');
-            score = 0;
-            isGameOver = true;
-            return obs;
-          }
-
-          return { ...obs, x: obs.x - gameSpeed };
+        currentObstaclesArray.forEach((obstacle) => {
+          obstacle.x = obstacle.x - 2;
         });
+
+        currentObstaclesArray.forEach((obstacle, index) => {
+          const hasLeftTheScreen = obstacle.x <= 0;
+
+          if (hasLeftTheScreen) {
+            currentObstaclesArray.splice(index, 1);
+          }
+        });
+
+        // return { ...obs, x: obs.x - gameSpeed };
+
+        return currentObstaclesArray;
+
+        // return curr.map((obs, index) => {
+
+        //   const isTouchingDino_right =
+        //     obs.x <= dinoInitialXPosition + dinoWidth;
+
+        //   const hasLeftTheScreen = obs.x <= 0;
+
+        //   const dinoYPos = currentDinoY + dinoHeight;
+        //   const isTouchingDino_bottom = dinoYPos >= gameHeight - obs.height;
+        //   console.log({ hasLeftTheScreen });
+
+        //   // if (isTouchingDino_bottom && isTouchingDino_right) {
+        //   //   console.log('colision');
+        //   //   score = 0;
+        //   //   isGameOver = true;
+        //   //   return obs;
+        //   // }
+
+        //   return { ...obs, x: obs.x - gameSpeed };
+        // });
       });
 
       window.requestAnimationFrame(gameLoop);
