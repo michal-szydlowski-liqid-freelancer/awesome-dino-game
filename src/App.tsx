@@ -87,8 +87,10 @@ function App() {
   const [obstaclePositionArr, setObstaclePositionArr] = useState<Obstacle[]>(
     []
   );
-
   const [dinoPosition, setDinoPosition] = useState(dinoInitialYPosition);
+  const [gameOverGlobal, setGameOverGlobal] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
+
   useEffect(() => {
     window.requestAnimationFrame(gameLoop);
     // 60 fps
@@ -109,12 +111,15 @@ function App() {
     });
 
     function gameLoop() {
-      score++;
       // console.log({ isGameOver });
-      // if (isGameOver) {
-      //   setIsGameOver_global(true);
-      //   return;
-      // }
+      if (isGameOver) {
+        console.log('endGame');
+
+        setGameOverGlobal(true);
+        return;
+      }
+
+      score++;
 
       // DINO moving part
       setDinoPosition((current) => {
@@ -187,10 +192,11 @@ function App() {
           const dinoYPos = currentDinoY + dinoHeight;
           const isTouchingDino_bottom =
             dinoYPos >= gameHeight - obstacle.height;
-          console.log({ hasLeftTheScreen });
+          // console.log({ hasLeftTheScreen });
 
           if (isTouchingDino_bottom && isTouchingDino_right) {
-            console.log('colision');
+            console.log('collision');
+            setFinalScore(score);
             score = 0;
             isGameOver = true;
             return obstacle;
@@ -225,7 +231,7 @@ function App() {
 
       window.requestAnimationFrame(gameLoop);
     }
-  }, [isGameOver]);
+  }, [gameOverGlobal]);
 
   // const resetGame = () => {
   //   setIsGameOver_global(false);
@@ -236,6 +242,7 @@ function App() {
   return (
     <>
       <div className="game">
+        {console.log({ finalScore, isGameOver, gameOverGlobal })}
         <Stage width={gameWidth} height={gameHeight}>
           <Layer>
             <Text
