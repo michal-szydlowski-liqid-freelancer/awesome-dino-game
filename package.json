@@ -10,7 +10,8 @@
     "konva": "^8.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-konva": "^17.0.2-5"
+    "react-konva": "^17.0.2-5",
+    "use-image": "^1.0.8"
   },
   "devDependencies": {
     "@types/react": "^17.0.33",
