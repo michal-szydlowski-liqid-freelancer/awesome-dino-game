@@ -17,18 +17,18 @@ const dinoHeight = 50;
 const maxJumpHeight = gameHeight - 50 - 50 - 50;
 const cactusInitialPosition = gameWidth;
 const gameSpeed = 10;
-const jumpSpeed = 1;
-let score = 0;
+const jumpSpeed = 4;
+const score = 0;
 
-let currentDinoY = 0;
+const currentDinoY = 0;
 const isGameOver = false;
-let isJumping = false;
-let fired = false;
-let isFalling = false;
+const isJumping = false;
+const fired = false;
+const isFalling = false;
 
 const initialSpawnTimer = 200;
 
-let spawnTimer = initialSpawnTimer;
+const spawnTimer = initialSpawnTimer;
 
 type Obstacle = { height: number; width: number; x: number };
 
@@ -89,134 +89,134 @@ function App() {
   );
 
   const [dinoPosition, setDinoPosition] = useState(dinoInitialYPosition);
-  useEffect(() => {
-    window.requestAnimationFrame(gameLoop);
-    // 60 fps
+  // useEffect(() => {
+  //   window.requestAnimationFrame(gameLoop);
+  //   // 60 fps
 
-    window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') {
-        if (!fired) {
-          fired = true;
-          isJumping = true;
-        }
-      }
-    });
+  //   window.addEventListener('keydown', (e) => {
+  //     if (e.code === 'Space') {
+  //       if (!fired) {
+  //         fired = true;
+  //         isJumping = true;
+  //       }
+  //     }
+  //   });
 
-    window.addEventListener('keyup', (e) => {
-      if (e.code === 'Space') {
-        fired = false;
-      }
-    });
+  //   window.addEventListener('keyup', (e) => {
+  //     if (e.code === 'Space') {
+  //       fired = false;
+  //     }
+  //   });
 
-    function gameLoop() {
-      score++;
-      // console.log({ isGameOver });
-      // if (isGameOver) {
-      //   setIsGameOver_global(true);
-      //   return;
-      // }
+  //   function gameLoop() {
+  //     score++;
+  //     // console.log({ isGameOver });
+  //     // if (isGameOver) {
+  //     //   setIsGameOver_global(true);
+  //     //   return;
+  //     // }
 
-      // DINO moving part
-      setDinoPosition((current) => {
-        const isDinoOnTheGround = current === dinoInitialYPosition;
-        const isMaxReached = current <= maxJumpHeight;
+  //     // DINO moving part
+  //     setDinoPosition((current) => {
+  //       const isDinoOnTheGround = current === dinoInitialYPosition;
+  //       const isMaxReached = current <= maxJumpHeight;
 
-        // PREVENTS DINO FROM JUMPING HIGHER THEN THE LIMIT
-        if (isMaxReached) {
-          console.log('HIT MAX');
+  //       // PREVENTS DINO FROM JUMPING HIGHER THEN THE LIMIT
+  //       if (isMaxReached) {
+  //         console.log('HIT MAX');
 
-          isJumping = false;
-        }
+  //         isJumping = false;
+  //       }
 
-        if (isDinoOnTheGround) {
-          fired = false;
-          isFalling = false;
-        }
+  //       if (isDinoOnTheGround) {
+  //         fired = false;
+  //         isFalling = false;
+  //       }
 
-        // JUMP - INCRESE 1PX TO THE JUMP
-        if (isJumping && !isFalling) {
-          isFalling = false;
-          currentDinoY = current - jumpSpeed;
-          return current - jumpSpeed;
-        }
+  //       // JUMP - INCRESE 1PX TO THE JUMP
+  //       if (isJumping && !isFalling) {
+  //         isFalling = false;
+  //         currentDinoY = current - jumpSpeed;
+  //         return current - jumpSpeed;
+  //       }
 
-        // STOP THE FALL WHEN THE DINO HITS THE GROUND
-        if (isDinoOnTheGround) {
-          currentDinoY = dinoInitialYPosition;
-          isFalling = false;
-          return dinoInitialYPosition;
-        }
+  //       // STOP THE FALL WHEN THE DINO HITS THE GROUND
+  //       if (isDinoOnTheGround) {
+  //         currentDinoY = dinoInitialYPosition;
+  //         isFalling = false;
+  //         return dinoInitialYPosition;
+  //       }
 
-        // FALL - INCRESE 1PX TO THE FALL
-        isFalling = true;
-        currentDinoY = current + jumpSpeed;
-        return current + jumpSpeed;
-      });
+  //       // FALL - INCRESE 1PX TO THE FALL
+  //       isFalling = true;
+  //       currentDinoY = current + jumpSpeed;
+  //       return current + jumpSpeed;
+  //     });
 
-      spawnTimer--;
+  //     spawnTimer--;
 
-      if (spawnTimer <= 0 && !isGameOver) {
-        setObstaclePositionArr((curr) => [...curr, spawnObstacle()]);
-        if (obstaclePositionArr.length > 3) {
-          setObstaclePositionArr((curr) => [
-            curr[curr.length - 3],
-            curr[curr.length - 2],
-            curr[curr.length - 1],
-          ]);
-        }
-        console.log(obstaclePositionArr);
+  //     if (spawnTimer <= 0 && !isGameOver) {
+  //       setObstaclePositionArr((curr) => [...curr, spawnObstacle()]);
+  //       if (obstaclePositionArr.length > 3) {
+  //         setObstaclePositionArr((curr) => [
+  //           curr[curr.length - 3],
+  //           curr[curr.length - 2],
+  //           curr[curr.length - 1],
+  //         ]);
+  //       }
+  //       console.log(obstaclePositionArr);
 
-        // spawnTimer = initialSpawnTimer - gameSpeed;
-        spawnTimer = initialSpawnTimer;
-      }
+  //       // spawnTimer = initialSpawnTimer - gameSpeed;
+  //       spawnTimer = initialSpawnTimer;
+  //     }
 
-      // 1. after the element leaves the screen we should remove it from the array
-      // 2. there is a bug with the collision
+  //     // 1. after the element leaves the screen we should remove it from the array
+  //     // 2. there is a bug with the collision
 
-      setObstaclePositionArr((curr) => {
-        const currentObstaclesArray = [...curr];
+  //     setObstaclePositionArr((curr) => {
+  //       const currentObstaclesArray = [...curr];
 
-        currentObstaclesArray.forEach((obstacle) => {
-          obstacle.x = obstacle.x - 2;
-        });
+  //       currentObstaclesArray.forEach((obstacle) => {
+  //         obstacle.x = obstacle.x - 2;
+  //       });
 
-        currentObstaclesArray.forEach((obstacle, index) => {
-          const hasLeftTheScreen = obstacle.x <= 0;
+  //       currentObstaclesArray.forEach((obstacle, index) => {
+  //         const hasLeftTheScreen = obstacle.x <= 0;
 
-          if (hasLeftTheScreen) {
-            currentObstaclesArray.splice(index, 1);
-          }
-        });
+  //         if (hasLeftTheScreen) {
+  //           currentObstaclesArray.splice(index, 1);
+  //         }
+  //       });
 
-        // return { ...obs, x: obs.x - gameSpeed };
+  //       // return { ...obs, x: obs.x - gameSpeed };
 
-        return currentObstaclesArray;
+  //       return currentObstaclesArray;
 
-        // return curr.map((obs, index) => {
+  //       // return curr.map((obs, index) => {
 
-        //   const isTouchingDino_right =
-        //     obs.x <= dinoInitialXPosition + dinoWidth;
+  //       //   const isTouchingDino_right =
+  //       //     obs.x <= dinoInitialXPosition + dinoWidth;
 
-        //   const hasLeftTheScreen = obs.x <= 0;
+  //       //   const hasLeftTheScreen = obs.x <= 0;
 
-        //   const dinoYPos = currentDinoY + dinoHeight;
-        //   const isTouchingDino_bottom = dinoYPos >= gameHeight - obs.height;
-        //   console.log({ hasLeftTheScreen });
+  //       //   const dinoYPos = currentDinoY + dinoHeight;
+  //       //   const isTouchingDino_bottom = dinoYPos >= gameHeight - obs.height;
+  //       //   console.log({ hasLeftTheScreen });
 
-        //   // if (isTouchingDino_bottom && isTouchingDino_right) {
-        //   //   console.log('colision');
-        //   //   score = 0;
-        //   //   isGameOver = true;
-        //   //   return obs;
-        //   // }
+  //       //   // if (isTouchingDino_bottom && isTouchingDino_right) {
+  //       //   //   console.log('colision');
+  //       //   //   score = 0;
+  //       //   //   isGameOver = true;
+  //       //   //   return obs;
+  //       //   // }
 
-        //   return { ...obs, x: obs.x - gameSpeed };
-        // });
-      });
+  //       //   return { ...obs, x: obs.x - gameSpeed };
+  //       // });
+  //     });
 
-      window.requestAnimationFrame(gameLoop);
-    }
-  }, [isGameOver]);
+  //     window.requestAnimationFrame(gameLoop);
+  //   }
+  // }, [isGameOver]);
 
   // const resetGame = () => {
   //   setIsGameOver_global(false);
@@ -241,7 +241,7 @@ function App() {
               yPosition={dinoPosition}
               height={dinoHeight}
             />
-
+            {console.log(obstaclePositionArr)}
             {obstaclePositionArr.map((obs) => {
               return (
                 <Potato
