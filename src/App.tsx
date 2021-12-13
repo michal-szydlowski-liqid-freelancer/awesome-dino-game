@@ -93,7 +93,7 @@ function App() {
   const [dinoPosition, setDinoPosition] = useState(dinoInitialYPosition);
   const [gameOverGlobal, setGameOverGlobal] = useState(false);
   const [char, setChar] = useState('louis');
-  const [isStarScreen, setisStarScreen] = useState(false);
+  const [isStarScreen, setisStarScreen] = useState(true);
 
   useEffect(() => {
     window.addEventListener('keydown', (e) => {
