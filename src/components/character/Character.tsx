@@ -1,12 +1,19 @@
 import './Character.css';
 
-const Character = () => {
+type TCharacter = {
+  charName: string;
+  isActive: boolean;
+  prop: () => {};
+};
+
+const Character = ({ charName = 'puma', isActive, prop }: TCharacter) => {
   return (
     <div
-      className="character-container"
-      style={{ width: '40px', height: '40px' }}
+      onClick={prop}
+      className={`character-container ${isActive && 'active'}`}
     >
-      <img src="./puma.jpg" width="40px" height="40px" />
+      <img src={`/src/assets/${charName}.png`} alt="" />
+      <span>{charName}</span>
     </div>
   );
 };

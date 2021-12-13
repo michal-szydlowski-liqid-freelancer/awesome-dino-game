@@ -9,3 +9,17 @@
   align-items: center;
   text-align: center;
 }
+
+.start-screen-container > * {
+  margin-bottom: 20px;
+}
+
+.chars-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.chars-container > *:not(:last-child) {
+  margin-right: 20px;
+}

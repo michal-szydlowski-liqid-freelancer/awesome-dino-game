@@ -1,10 +1,25 @@
-.button-container {
+.character-container {
   background: #fff;
-  border: 1px solid black;
-  display: flex;
-  justify-content: center;
+  border: 1.5px solid black;
   align-items: center;
   font-family: inherit;
   width: fit-content;
+  height: fit-content;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+.character-container.active {
+  background: rgb(229, 120, 74);
+}
+
+.character-container img {
+  width: auto;
+  height: 50px;
+}
+
+.character-container span {
+  font-size: 16px;
+  margin-top: 5px;
 }
