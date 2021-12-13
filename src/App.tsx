@@ -129,7 +129,6 @@ function App() {
     // 60 fps
 
     function gameLoop() {
-      console.log(isGameOver);
       if (isGameOver) {
         setGameOverGlobal(true);
         return;
@@ -144,8 +143,6 @@ function App() {
 
         // PREVENTS DINO FROM JUMPING HIGHER THEN THE LIMIT
         if (isMaxReached) {
-          console.log('HIT MAX');
-
           isJumping = false;
         }
 
@@ -185,10 +182,6 @@ function App() {
 
       setObstacleArr((curr) => {
         const currentObstaclesArray = [...curr];
-
-        // currentObstaclesArray.forEach((obstacle) => {
-        //   obstacle.x = obstacle.x - 2;
-        // });
 
         currentObstaclesArray.forEach((obstacle, index) => {
           const hasLeftTheScreen = obstacle.x + obstacle.width <= 0;
@@ -236,7 +229,6 @@ function App() {
               setChar(char);
               setisStarScreen(false);
               isGameOver = false;
-              console.log({ isGameOver });
             }}
           />
         </div>
