@@ -4,6 +4,12 @@ import { useEffect, useState } from 'react';
 import { Stage, Layer, Text, Image, Rect } from 'react-konva';
 import useImage from 'use-image';
 
+import louis from './images/louis.png';
+import puma from './images/puma.png';
+import michal from './images/michal.png';
+
+import potato from './images/potato.png';
+
 function getRandomInRange(min: number, max: number) {
   return Math.floor(Math.random() * (max - min) + min);
 }
@@ -46,7 +52,13 @@ function Dino({
   height: number;
   char: string;
 }) {
-  const [image] = useImage(`src/assets/${char}.png`);
+  const images: Record<string, string> = {
+    louis,
+    puma,
+    michal,
+  };
+  const [image] = useImage(images[char]);
+
   return (
     <Image
       image={image}
@@ -69,7 +81,7 @@ function Potato({
   height: number;
   width: number;
 }) {
-  const [image] = useImage('src/assets/angry_potato_adobespark.png');
+  const [image] = useImage(potato);
   return (
     <Image
       image={image}
@@ -219,8 +231,7 @@ function App() {
       {isStarScreen ? (
         <div className="App">
           <StartScreen
-            // @ts-ignore
-            startGame={(char) => {
+            startGame={(char: string) => {
               setChar(char);
               setisStarScreen(false);
               console.log(char);
