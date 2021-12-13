@@ -116,8 +116,7 @@ function App() {
     window.requestAnimationFrame(gameLoop);
     // 60 fps
 
-    function gameLoop(time) {
-      console.log(time);
+    function gameLoop() {
       if (isGameOver) {
         setGameOverGlobal(true);
         return;
@@ -220,6 +219,7 @@ function App() {
       {isStarScreen ? (
         <div className="App">
           <StartScreen
+            // @ts-ignore
             startGame={(char) => {
               setChar(char);
               setisStarScreen(false);
