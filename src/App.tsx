@@ -30,7 +30,7 @@ let obstacleSpawnSpeed = 6;
 let gameSpeed = 6;
 let score = 0;
 let currentDinoY = 0;
-let isGameOver = false;
+let isGameOver = true;
 let isJumping = false;
 let fired = false;
 let isFalling = false;
@@ -129,6 +129,7 @@ function App() {
     // 60 fps
 
     function gameLoop() {
+      console.log(isGameOver);
       if (isGameOver) {
         setGameOverGlobal(true);
         return;
@@ -216,7 +217,7 @@ function App() {
       gameSpeed = gameSpeed + spawnOffset;
       window.requestAnimationFrame(gameLoop);
     }
-  }, [gameOverGlobal]);
+  }, [gameOverGlobal, isGameOver]);
 
   const resetGame = () => {
     setGameOverGlobal(false);
@@ -234,7 +235,8 @@ function App() {
             startGame={(char: string) => {
               setChar(char);
               setisStarScreen(false);
-              console.log(char);
+              isGameOver = false;
+              console.log({ isGameOver });
             }}
           />
         </div>

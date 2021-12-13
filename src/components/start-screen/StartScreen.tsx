@@ -4,7 +4,7 @@ import Character from '../character/Character';
 import './StartScreen.css';
 
 function StartScreen({ startGame }: { startGame: (arg: string) => void }) {
-  const [selectedChar, setSelectedChar] = useState('michal');
+  const [selectedChar, setSelectedChar] = useState('louis');
   const chars = ['puma', 'louis', 'michal'];
   return (
     <div className="start-screen-container">
