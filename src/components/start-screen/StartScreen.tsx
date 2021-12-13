@@ -14,6 +14,7 @@ function StartScreen({ startGame }) {
       <div className="chars-container">
         {chars.map((char) => (
           <Character
+            key={char}
             charName={`${char}`}
             isActive={selectedChar === char}
             prop={() => setSelectedChar(char)}

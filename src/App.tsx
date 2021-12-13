@@ -8,8 +8,8 @@ function getRandomInRange(min: number, max: number) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-const gameWidth = window.innerWidth * 0.9 > 450 ? 450 : window.innerWidth * 0.9;
-const gameHeight = 200;
+const gameWidth = window.innerWidth * 0.9 > 650 ? 650 : window.innerWidth * 0.9;
+const gameHeight = 300;
 const dinoInitialYPosition = gameHeight - 50;
 const dinoInitialXPosition = 20;
 const dinoWidth = 30;
@@ -286,6 +286,7 @@ function App() {
                 {obstacleArray.map((obs) => {
                   return (
                     <Potato
+                      key={obs.height}
                       xPosition={obs.x}
                       yPosition={gameHeight - obs.height}
                       width={obs.width}
