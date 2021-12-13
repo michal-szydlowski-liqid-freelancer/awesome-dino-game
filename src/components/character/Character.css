@@ -1,0 +1,10 @@
+.button-container {
+  background: #fff;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: inherit;
+  width: fit-content;
+  padding: 10px;
+}
